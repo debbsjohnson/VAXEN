@@ -1,0 +1,83 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "view": "Ver",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "submit": "Enviar",
+    "confirm": "Confirmar",
+    "amount": "Cantidad",
+    "currency": "Moneda",
+    "date": "Fecha",
+    "status": "Estado",
+    "description": "Descripción",
+    "reference": "Referencia"
+  },
+  "navigation": {
+    "dashboard": "Panel",
+    "wallets": "Carteras",
+    "convert": "Convertir",
+    "payouts": "Pagos",
+    "batch": "Pagos por Lotes",
+    "team": "Equipo",
+    "reports": "Informes",
+    "settings": "Configuración",
+    "admin": "Admin"
+  },
+  "auth": {
+    "login": "Iniciar Sesión",
+    "logout": "Cerrar Sesión",
+    "email": "Email",
+    "password": "Contraseña",
+    "mfaCode": "Código MFA",
+    "forgotPassword": "¿Olvidaste la contraseña?",
+    "rememberMe": "Recordarme"
+  },
+  "dashboard": {
+    "title": "Panel",
+    "totalBalance": "Saldo Total",
+    "recentTransactions": "Transacciones Recientes",
+    "quickActions": "Acciones Rápidas",
+    "convertCurrency": "Convertir Moneda",
+    "sendMoney": "Enviar Dinero",
+    "viewReports": "Ver Informes"
+  },
+  "wallets": {
+    "title": "Carteras",
+    "fiatWallets": "Carteras Fiat",
+    "cryptoWallets": "Carteras Crypto",
+    "balance": "Saldo",
+    "available": "Disponible",
+    "pending": "Pendiente",
+    "addWallet": "Agregar Cartera"
+  },
+  "convert": {
+    "title": "Convertir Moneda",
+    "from": "De",
+    "to": "A",
+    "rate": "Tasa",
+    "fee": "Comisión",
+    "total": "Total",
+    "getQuote": "Obtener Cotización",
+    "convert": "Convertir",
+    "quoteExpires": "Cotización expira en"
+  },
+  "payouts": {
+    "title": "Pagos",
+    "sendMoney": "Enviar Dinero",
+    "beneficiary": "Beneficiario",
+    "amount": "Cantidad",
+    "reference": "Referencia",
+    "description": "Descripción",
+    "send": "Enviar",
+    "batchUpload": "Carga por Lotes",
+    "downloadTemplate": "Descargar Plantilla"
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "confirm": "Confirm",
+    "amount": "Amount",
+    "currency": "Currency",
+    "date": "Date",
+    "status": "Status",
+    "description": "Description",
+    "reference": "Reference"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "wallets": "Wallets",
+    "convert": "Convert",
+    "payouts": "Payouts",
+    "batch": "Batch Payouts",
+    "team": "Team",
+    "reports": "Reports",
+    "settings": "Settings",
+    "admin": "Admin"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "mfaCode": "MFA Code",
+    "forgotPassword": "Forgot Password?",
+    "rememberMe": "Remember Me"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "totalBalance": "Total Balance",
+    "recentTransactions": "Recent Transactions",
+    "quickActions": "Quick Actions",
+    "convertCurrency": "Convert Currency",
+    "sendMoney": "Send Money",
+    "viewReports": "View Reports"
+  },
+  "wallets": {
+    "title": "Wallets",
+    "fiatWallets": "Fiat Wallets",
+    "cryptoWallets": "Crypto Wallets",
+    "balance": "Balance",
+    "available": "Available",
+    "pending": "Pending",
+    "addWallet": "Add Wallet"
+  },
+  "convert": {
+    "title": "Convert Currency",
+    "from": "From",
+    "to": "To",
+    "rate": "Rate",
+    "fee": "Fee",
+    "total": "Total",
+    "getQuote": "Get Quote",
+    "convert": "Convert",
+    "quoteExpires": "Quote expires in"
+  },
+  "payouts": {
+    "title": "Payouts",
+    "sendMoney": "Send Money",
+    "beneficiary": "Beneficiary",
+    "amount": "Amount",
+    "reference": "Reference",
+    "description": "Description",
+    "send": "Send",
+    "batchUpload": "Batch Upload",
+    "downloadTemplate": "Download Template"
+  }
+}

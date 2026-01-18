@@ -1,0 +1,550 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Organization {
+  id                String   @id @default(cuid())
+  name              String
+  legalName         String
+  registrationNumber String
+  taxId             String?
+  country           String   @db.Char(2)
+  address           Json
+  kybStatus         KybStatus @default(PENDING)
+  kybSubmittedAt    DateTime?
+  kybApprovedAt     DateTime?
+  settings          Json     @default("{}")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  users             User[]
+  wallets           Wallet[]
+  accountNumbers    AccountNumber[]
+  beneficiaries     Beneficiary[]
+  deposits          Deposit[]
+  payouts           Payout[]
+  payoutBatches     PayoutBatch[]
+  conversionOrders  ConversionOrder[]
+  limitOrders       LimitOrder[]
+  journals          Journal[]
+  reconciliationRuns ReconciliationRun[]
+  statementFiles    StatementFile[]
+  complianceCases   ComplianceCase[]
+  screeningResults  ScreeningResult[]
+  auditLogs         AuditLog[]
+  webhookEvents     WebhookEvent[]
+
+  @@map("organizations")
+}
+
+model User {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  firstName      String
+  lastName       String
+  passwordHash   String
+  role           UserRole @default(VIEWER)
+  organizationId String
+  mfaEnabled     Boolean  @default(false)
+  mfaSecret      String?
+  lastLoginAt    DateTime?
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  auditLogs      AuditLog[]
+
+  @@map("users")
+}
+
+model Wallet {
+  id              String     @id @default(cuid())
+  organizationId  String
+  type            WalletType
+  currency        String     @db.Char(3)
+  balance         Decimal    @default(0) @db.Decimal(20, 8)
+  availableBalance Decimal   @default(0) @db.Decimal(20, 8)
+  pendingBalance  Decimal    @default(0) @db.Decimal(20, 8)
+  isActive        Boolean    @default(true)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  // Relations
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  transactions    WalletTransaction[]
+
+  @@map("wallets")
+}
+
+model WalletTransaction {
+  id          String   @id @default(cuid())
+  walletId    String
+  type        TransactionType
+  amount      Decimal  @db.Decimal(20, 8)
+  currency    String   @db.Char(3)
+  description String
+  reference   String?
+  status      TransactionStatus @default(PENDING)
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  wallet      Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
+  @@map("wallet_transactions")
+}
+
+model AccountNumber {
+  id              String   @id @default(cuid())
+  organizationId  String
+  name            String
+  currency        String   @db.Char(3)
+  type            AccountType
+  accountNumber   String
+  routingNumber   String?
+  bankCode        String?
+  bankName        String
+  bankCountry     String   @db.Char(2)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("account_numbers")
+}
+
+model Beneficiary {
+  id              String   @id @default(cuid())
+  organizationId  String
+  name            String
+  type            BeneficiaryType
+  accountNumber   String?
+  routingNumber   String?
+  bankCode        String?
+  bankName        String?
+  bankCountry     String?  @db.Char(2)
+  address         String?  // For crypto
+  currency        String   @db.Char(3)
+  network         String?  // For crypto
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  payouts         Payout[]
+
+  @@map("beneficiaries")
+}
+
+model Deposit {
+  id                String   @id @default(cuid())
+  organizationId    String
+  walletId          String
+  type              DepositType
+  amount            Decimal  @db.Decimal(20, 8)
+  currency          String   @db.Char(3)
+  reference         String?
+  status            DepositStatus @default(PENDING)
+  providerReference String?
+  executedAt        DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  organization      Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("deposits")
+}
+
+model Payout {
+  id              String   @id @default(cuid())
+  organizationId  String
+  type            PayoutType
+  amount          Decimal  @db.Decimal(20, 8)
+  currency        String   @db.Char(3)
+  beneficiaryId   String
+  reference       String?
+  description     String?
+  status          PayoutStatus @default(PENDING)
+  fee             Decimal  @default(0) @db.Decimal(20, 8)
+  executedAt      DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  beneficiary     Beneficiary @relation(fields: [beneficiaryId], references: [id])
+
+  @@map("payouts")
+}
+
+model PayoutBatch {
+  id              String   @id @default(cuid())
+  organizationId  String
+  name            String
+  totalAmount     Decimal  @db.Decimal(20, 8)
+  totalCount      Int
+  processedCount  Int      @default(0)
+  status          BatchStatus @default(PENDING)
+  fileUrl         String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("payout_batches")
+}
+
+model ConversionOrder {
+  id              String   @id @default(cuid())
+  organizationId  String
+  fromCurrency    String   @db.Char(3)
+  toCurrency      String   @db.Char(3)
+  fromAmount      Decimal  @db.Decimal(20, 8)
+  toAmount        Decimal  @db.Decimal(20, 8)
+  rate            Decimal  @db.Decimal(20, 8)
+  fee             Decimal  @default(0) @db.Decimal(20, 8)
+  status          OrderStatus @default(PENDING)
+  type            ConversionType @default(MARKET)
+  limitPrice      Decimal? @db.Decimal(20, 8)
+  executedAt      DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("conversion_orders")
+}
+
+model LimitOrder {
+  id              String   @id @default(cuid())
+  organizationId  String
+  fromCurrency    String   @db.Char(3)
+  toCurrency      String   @db.Char(3)
+  amount          Decimal  @db.Decimal(20, 8)
+  limitPrice      Decimal  @db.Decimal(20, 8)
+  type            OrderType @default(LIMIT)
+  status          OrderStatus @default(PENDING)
+  executedAt      DateTime?
+  cancelledAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("limit_orders")
+}
+
+model Journal {
+  id              String   @id @default(cuid())
+  organizationId  String
+  type            String
+  description     String
+  reference       String?
+  status          JournalStatus @default(PENDING)
+  postedAt        DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  entries         LedgerEntry[]
+
+  @@map("journals")
+}
+
+model LedgerEntry {
+  id          String   @id @default(cuid())
+  organizationId String
+  journalId   String
+  account     String
+  debit       Decimal? @db.Decimal(20, 8)
+  credit      Decimal? @db.Decimal(20, 8)
+  description String
+  reference   String?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  journal     Journal @relation(fields: [journalId], references: [id], onDelete: Cascade)
+
+  @@map("ledger_entries")
+}
+
+model ReconciliationRun {
+  id              String   @id @default(cuid())
+  organizationId  String
+  date            DateTime
+  status          ReconciliationStatus @default(PENDING)
+  discrepancies   Json     @default("[]")
+  completedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("reconciliation_runs")
+}
+
+model StatementFile {
+  id              String   @id @default(cuid())
+  organizationId  String
+  type            StatementType
+  period          Json
+  currency        String   @db.Char(3)
+  fileUrl         String
+  fileSize        Int
+  status          StatementStatus @default(GENERATING)
+  generatedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("statement_files")
+}
+
+model ComplianceCase {
+  id              String   @id @default(cuid())
+  organizationId  String
+  type            ComplianceType
+  status          ComplianceStatus @default(PENDING)
+  provider        String
+  providerCaseId  String
+  submittedAt     DateTime
+  completedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("compliance_cases")
+}
+
+model ScreeningResult {
+  id              String   @id @default(cuid())
+  organizationId  String
+  type            ScreeningType
+  status          ScreeningStatus @default(CLEAN)
+  riskScore       Int
+  provider        String
+  details         Json
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("screening_results")
+}
+
+model AuditLog {
+  id              String   @id @default(cuid())
+  organizationId  String
+  userId          String?
+  action          String
+  resource        String
+  resourceId      String?
+  details         Json?
+  ipAddress       String?
+  userAgent       String?
+  createdAt       DateTime @default(now())
+
+  // Relations
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user            User? @relation(fields: [userId], references: [id])
+
+  @@map("audit_logs")
+}
+
+model WebhookEvent {
+  id              String   @id @default(cuid())
+  organizationId  String
+  provider        String
+  eventType       String
+  payload         Json
+  status          WebhookStatus @default(PENDING)
+  processedAt     DateTime?
+  retryCount      Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("webhook_events")
+}
+
+// Enums
+enum KybStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  REQUIRES_INFO
+}
+
+enum UserRole {
+  OWNER
+  MANAGER
+  FINANCE
+  VIEWER
+}
+
+enum WalletType {
+  FIAT
+  CRYPTO
+}
+
+enum TransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  TRANSFER_IN
+  TRANSFER_OUT
+  CONVERSION
+  FEE
+}
+
+enum TransactionStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum AccountType {
+  IBAN
+  PIX
+  ACH
+  SWIFT
+}
+
+enum BeneficiaryType {
+  BANK
+  CRYPTO
+}
+
+enum DepositType {
+  FIAT
+  CRYPTO
+}
+
+enum DepositStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum PayoutType {
+  BANK
+  CRYPTO
+}
+
+enum PayoutStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum BatchStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum ConversionType {
+  MARKET
+  LIMIT
+}
+
+enum OrderType {
+  MARKET
+  LIMIT
+}
+
+enum JournalStatus {
+  PENDING
+  POSTED
+  REVERSED
+}
+
+enum ReconciliationStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum StatementType {
+  PDF
+  CSV
+}
+
+enum StatementStatus {
+  GENERATING
+  READY
+  FAILED
+}
+
+enum ComplianceType {
+  KYB
+  KYT
+  AML
+}
+
+enum ComplianceStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  REQUIRES_INFO
+}
+
+enum ScreeningType {
+  TRANSACTION
+  ADDRESS
+  ENTITY
+}
+
+enum ScreeningStatus {
+  CLEAN
+  FLAGGED
+  BLOCKED
+}
+
+enum WebhookStatus {
+  PENDING
+  PROCESSED
+  FAILED
+}

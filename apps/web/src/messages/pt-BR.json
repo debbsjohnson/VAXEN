@@ -1,0 +1,83 @@
+{
+  "common": {
+    "loading": "Carregando...",
+    "error": "Erro",
+    "success": "Sucesso",
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "view": "Visualizar",
+    "back": "Voltar",
+    "next": "Próximo",
+    "previous": "Anterior",
+    "submit": "Enviar",
+    "confirm": "Confirmar",
+    "amount": "Valor",
+    "currency": "Moeda",
+    "date": "Data",
+    "status": "Status",
+    "description": "Descrição",
+    "reference": "Referência"
+  },
+  "navigation": {
+    "dashboard": "Painel",
+    "wallets": "Carteiras",
+    "convert": "Converter",
+    "payouts": "Pagamentos",
+    "batch": "Pagamentos em Lote",
+    "team": "Equipe",
+    "reports": "Relatórios",
+    "settings": "Configurações",
+    "admin": "Admin"
+  },
+  "auth": {
+    "login": "Entrar",
+    "logout": "Sair",
+    "email": "Email",
+    "password": "Senha",
+    "mfaCode": "Código MFA",
+    "forgotPassword": "Esqueceu a senha?",
+    "rememberMe": "Lembrar de mim"
+  },
+  "dashboard": {
+    "title": "Painel",
+    "totalBalance": "Saldo Total",
+    "recentTransactions": "Transações Recentes",
+    "quickActions": "Ações Rápidas",
+    "convertCurrency": "Converter Moeda",
+    "sendMoney": "Enviar Dinheiro",
+    "viewReports": "Ver Relatórios"
+  },
+  "wallets": {
+    "title": "Carteiras",
+    "fiatWallets": "Carteiras Fiat",
+    "cryptoWallets": "Carteiras Crypto",
+    "balance": "Saldo",
+    "available": "Disponível",
+    "pending": "Pendente",
+    "addWallet": "Adicionar Carteira"
+  },
+  "convert": {
+    "title": "Converter Moeda",
+    "from": "De",
+    "to": "Para",
+    "rate": "Taxa",
+    "fee": "Taxa",
+    "total": "Total",
+    "getQuote": "Obter Cotação",
+    "convert": "Converter",
+    "quoteExpires": "Cotação expira em"
+  },
+  "payouts": {
+    "title": "Pagamentos",
+    "sendMoney": "Enviar Dinheiro",
+    "beneficiary": "Beneficiário",
+    "amount": "Valor",
+    "reference": "Referência",
+    "description": "Descrição",
+    "send": "Enviar",
+    "batchUpload": "Upload em Lote",
+    "downloadTemplate": "Baixar Modelo"
+  }
+}

@@ -1,0 +1,148 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  lint-and-typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'yarn'
+      
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      
+      - name: Lint
+        run: yarn lint
+      
+      - name: Type check
+        run: yarn typecheck
+
+  test-api:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: vaxen_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'yarn'
+      
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      
+      - name: Build packages
+        run: yarn workspace @vaxen/types build
+      
+      - name: Generate Prisma client
+        run: yarn workspace @vaxen/api db:generate
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/vaxen_test
+      
+      - name: Run database migrations
+        run: yarn workspace @vaxen/api migrate:deploy
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/vaxen_test
+      
+      - name: Run API tests
+        run: yarn workspace @vaxen/api test
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/vaxen_test
+          REDIS_URL: redis://localhost:6379
+          JWT_SECRET: test-jwt-secret
+          REFRESH_SECRET: test-refresh-secret
+      
+      - name: Run API e2e tests
+        run: yarn workspace @vaxen/api test:e2e
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/vaxen_test
+          REDIS_URL: redis://localhost:6379
+          JWT_SECRET: test-jwt-secret
+          REFRESH_SECRET: test-refresh-secret
+
+  test-web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'yarn'
+      
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      
+      - name: Build packages
+        run: yarn workspace @vaxen/types build
+        run: yarn workspace @vaxen/ui build
+      
+      - name: Run Web tests
+        run: yarn workspace @vaxen/web test
+      
+      - name: Build Web app
+        run: yarn workspace @vaxen/web build
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:3001
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [lint-and-typecheck, test-api, test-web]
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'yarn'
+      
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      
+      - name: Build all packages
+        run: yarn build
+      
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: |
+            apps/api/dist/
+            apps/web/.next/
+            packages/*/dist/
