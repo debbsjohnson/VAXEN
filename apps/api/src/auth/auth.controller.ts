@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagg
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { MfaService } from './mfa.service';
-import { LoginRequestSchema, RefreshTokenRequestSchema, MfaSetupRequestSchema, MfaVerifyRequestSchema } from '@vaxen/types';
+import { LoginRequest, RefreshTokenRequest, MfaVerifyRequest } from '@vaxen/types';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -18,7 +18,7 @@ export class AuthController {
   @ApiOperation({ summary: 'User login' })
   @ApiResponse({ status: 200, description: 'Login successful' })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
-  async login(@Body() loginData: LoginRequestSchema) {
+  async login(@Body() loginData: LoginRequest) {
     const user = await this.authService.validateUser(loginData.email, loginData.password);
     if (!user) {
       throw new Error('Invalid credentials');
@@ -31,7 +31,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Refresh access token' })
   @ApiResponse({ status: 200, description: 'Token refreshed successfully' })
   @ApiResponse({ status: 401, description: 'Invalid refresh token' })
-  async refresh(@Body() refreshData: RefreshTokenRequestSchema) {
+  async refresh(@Body() refreshData: RefreshTokenRequest) {
     return this.authService.refreshToken(refreshData.refreshToken);
   }
 
@@ -56,7 +56,7 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Verify MFA setup' })
   @ApiResponse({ status: 200, description: 'MFA verified successfully' })
-  async verifyMfa(@Request() req, @Body() mfaData: MfaVerifyRequestSchema) {
+  async verifyMfa(@Request() req, @Body() mfaData: MfaVerifyRequest) {
     // In a real implementation, you would save the MFA secret to the user
     // For now, we'll just verify the code
     const isValid = this.mfaService.verifyToken(req.user.mfaSecret || '', mfaData.code);

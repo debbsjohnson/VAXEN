@@ -126,7 +126,7 @@ describe('AuthService', () => {
 
     it('should require MFA code when MFA is enabled', async () => {
       const userWithMfa = { ...mockUser, mfaEnabled: true, mfaSecret: 'secret' };
-      jest.spyOn(mfaService, 'verifyToken').mockResolvedValue(true);
+      jest.spyOn(mfaService, 'verifyToken').mockReturnValue(true);
       jest.spyOn(jwtService, 'sign').mockReturnValue('mock-token');
       jest.spyOn(prismaService.user, 'update').mockResolvedValue(userWithMfa);
 

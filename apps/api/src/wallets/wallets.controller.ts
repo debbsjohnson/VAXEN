@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, UseGuards, Request, Param } from '@nestjs/
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { WalletsService } from './wallets.service';
-import { CreateWalletRequestSchema } from '@vaxen/types';
+import { CreateWalletRequest } from '@vaxen/types';
 
 @ApiTags('wallets')
 @Controller('wallets')
@@ -21,7 +21,7 @@ export class WalletsController {
   @Post()
   @ApiOperation({ summary: 'Create new wallet' })
   @ApiResponse({ status: 201, description: 'Wallet created successfully' })
-  async createWallet(@Request() req, @Body() data: CreateWalletRequestSchema) {
+  async createWallet(@Request() req, @Body() data: CreateWalletRequest) {
     return this.walletsService.create(req.user.organizationId, data);
   }
 

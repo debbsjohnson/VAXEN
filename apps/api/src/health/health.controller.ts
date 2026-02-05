@@ -31,7 +31,7 @@ export class HealthController {
           database: 'unhealthy',
           api: 'healthy',
         },
-        error: error.message,
+        error: error instanceof Error ? error.message : 'Unknown error',
       };
     }
   }

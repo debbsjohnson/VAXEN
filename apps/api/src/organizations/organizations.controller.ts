@@ -2,7 +2,7 @@ import { Controller, Get, Patch, Body, UseGuards, Request } from '@nestjs/common
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { OrganizationsService } from './organizations.service';
-import { UpdateOrganizationRequestSchema } from '@vaxen/types';
+import { UpdateOrganizationRequest } from '@vaxen/types';
 
 @ApiTags('organizations')
 @Controller('org')
@@ -21,7 +21,7 @@ export class OrganizationsController {
   @Patch()
   @ApiOperation({ summary: 'Update organization' })
   @ApiResponse({ status: 200, description: 'Organization updated' })
-  async updateOrganization(@Request() req, @Body() data: UpdateOrganizationRequestSchema) {
+  async updateOrganization(@Request() req, @Body() data: UpdateOrganizationRequest) {
     return this.organizationsService.update(req.user.organizationId, data);
   }
 }

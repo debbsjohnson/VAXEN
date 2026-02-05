@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateWalletRequestSchema } from '@vaxen/types';
+import { CreateWalletRequest } from '@vaxen/types';
 
 @Injectable()
 export class WalletsService {
@@ -19,7 +19,7 @@ export class WalletsService {
     });
   }
 
-  async create(organizationId: string, data: CreateWalletRequestSchema) {
+  async create(organizationId: string, data: CreateWalletRequest) {
     return this.prisma.wallet.create({
       data: {
         organizationId,

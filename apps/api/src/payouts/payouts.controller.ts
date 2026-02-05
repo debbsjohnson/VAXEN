@@ -2,7 +2,7 @@ import { Controller, Post, Body, UseGuards, Request } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { PayoutsService } from './payouts.service';
-import { CreatePayoutRequestSchema } from '@vaxen/types';
+import { CreatePayoutRequest } from '@vaxen/types';
 
 @ApiTags('payouts')
 @Controller('payouts')
@@ -14,7 +14,7 @@ export class PayoutsController {
   @Post()
   @ApiOperation({ summary: 'Create payout' })
   @ApiResponse({ status: 201, description: 'Payout created' })
-  async createPayout(@Request() req, @Body() data: CreatePayoutRequestSchema) {
+  async createPayout(@Request() req, @Body() data: CreatePayoutRequest) {
     return this.payoutsService.create({
       ...data,
       organizationId: req.user.organizationId,

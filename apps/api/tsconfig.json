@@ -18,9 +18,12 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
+    "noEmit": false,
     "paths": {
       "@vaxen/types": ["../../packages/types/src"],
       "@vaxen/config": ["../../packages/config"]
     }
-  }
+  },
+  "include": ["src/**/*", "prisma/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.spec.ts"]
 }

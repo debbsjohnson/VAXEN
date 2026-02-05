@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateOrganizationRequestSchema, UpdateOrganizationRequestSchema } from '@vaxen/types';
+import { CreateOrganizationRequest, UpdateOrganizationRequest } from '@vaxen/types';
 
 @Injectable()
 export class OrganizationsService {
@@ -16,7 +16,7 @@ export class OrganizationsService {
     });
   }
 
-  async create(data: CreateOrganizationRequestSchema) {
+  async create(data: CreateOrganizationRequest) {
     return this.prisma.organization.create({
       data: {
         ...data,
@@ -26,7 +26,7 @@ export class OrganizationsService {
     });
   }
 
-  async update(id: string, data: UpdateOrganizationRequestSchema) {
+  async update(id: string, data: UpdateOrganizationRequest) {
     return this.prisma.organization.update({
       where: { id },
       data: {
